@@ -1,0 +1,56 @@
+grammar MonitorLog
+  rule line
+    timestamp (' ' db)? ' ' command {
+      def execute(redis)
+        command.execute(redis)
+      end
+    }
+  end
+
+  rule command
+    command_name command_args {
+      def execute(redis)
+        redis.send name, *args
+      end
+
+      def name; command_name.to_s; end
+      def args; command_args.map(&:to_s); end
+
+      def bits
+        %w(name args).inject({}) do |h, bit|
+          h.tap { h[bit.to_sym] = send(bit) }
+        end
+      end
+    }
+  end
+
+  rule command_name
+    string
+  end
+
+  rule command_args
+    (' ' command_arg)* {
+      def map(&block)
+        elements.map(&:command_arg).map(&block)
+      end
+    }
+  end
+
+  rule command_arg
+    string
+  end
+
+  rule timestamp
+    '+' [0-9]+ '.' [0-9]+
+  end
+
+  rule db
+    '(db ' [0-9] ')'
+  end
+
+  rule string
+    '"' value:([^"]*) '"' {
+      def to_s; value.text_value; end
+    }
+  end
+end
