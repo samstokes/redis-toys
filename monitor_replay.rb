@@ -5,7 +5,7 @@ require 'andand'
 require 'redis'
 require 'treetop'
 
-parser = Treetop.load('monitor_log.treetop').new
+parser = Treetop.load(File.join(File.dirname(__FILE__), 'monitor_log.treetop')).new
 opts = {}
 opts[:port] = ARGV[0].to_i if ARGV[0]
 redis = Redis.new(opts)
