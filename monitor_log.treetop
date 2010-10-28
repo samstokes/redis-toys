@@ -13,6 +13,10 @@ grammar MonitorLog
         redis.send name, *args
       end
 
+      def to_s
+        "#{name} #{args.map {|arg| "\"#{arg}\"" }.join(' ')}"
+      end
+
       def name; command_name.to_s; end
       def args; command_args.map(&:to_s); end
 

@@ -2,13 +2,9 @@
 
 require 'rubygems'
 require 'andand'
-require 'redis'
 require 'treetop'
 
 parser = Treetop.load(File.join(File.dirname(__FILE__), 'monitor_log.treetop')).new
-opts = {}
-opts[:port] = ARGV[0].to_i if ARGV[0]
-redis = Redis.new(opts)
 
 executed = 0
 
@@ -41,7 +37,7 @@ begin
     parser.parse(line.strip).andand do |parsed_line|
       command = parsed_line.command
       begin
-        command.execute(redis) unless command.name.upcase == 'MONITOR'
+        puts command.to_s unless command.name.upcase == 'MONITOR'
       rescue => e
         errors << [i, line, command, e]
       end
