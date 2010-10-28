@@ -19,16 +19,16 @@ def errors.<<(item)
   elsif @overflow
     @overflow += 1
   else
-    puts "More than 100 errors!"
+    STDERR.puts "More than 100 errors!"
     @overflow = length
   end
 end
 def errors.output!
-  puts "#@overflow errors, only showing first 100" if @overflow
+  STDERR.puts "#@overflow errors, only showing first 100" if @overflow
   each do |index, line, command, error|
-    puts "At line #{index}: #{line}"
-    puts "\tCommand: #{command.bits.inspect}"
-    puts "\tError: #{error}"
+    STDERR.puts "At line #{index}: #{line}"
+    STDERR.puts "\tCommand: #{command.bits.inspect}"
+    STDERR.puts "\tError: #{error}"
   end
 end
 
@@ -46,20 +46,20 @@ begin
         errors << [i, line, command, e]
       end
       executed += 1
-    end or puts parser.failure_reason
+    end or STDERR.puts parser.failure_reason
 
     if i % 1000 == 999
-      puts "Executed #{executed} out of #{i + 1} lines"
+      STDERR.puts "Executed #{executed} out of #{i + 1} lines"
     end
   end
 rescue => e
   p e
 end
 
-puts 'Errors: ' if errors.any?
+STDERR.puts 'Errors: ' if errors.any?
 errors.output!
 
-puts
-puts "Executed: #{executed}\tErrors: #{errors.length}"
+STDERR.puts
+STDERR.puts "Executed: #{executed}\tErrors: #{errors.length}"
 
 exit 1 if errors.any?
